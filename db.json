@@ -1,0 +1,32 @@
+{
+  "fuvest": [
+    {
+      "nrQuestao": 1,
+      "perguntaSrc": "fuvest_2022_fisica_01.jpg",
+      "resposta": "a",
+      "materia": "fisica",
+      "ano": 2022
+    },
+    {
+      "nrQuestao": 2,
+      "perguntaSrc": "fuvest_2022_fisica_02.jpg",
+      "resposta": "c",
+      "materia": "fisica",
+      "ano": 2022
+    },
+    {
+      "nrQuestao": 3,
+      "perguntaSrc": "fuvest_2022_fisica_03.jpg",
+      "resposta": "d",
+      "materia": "fisica",
+      "ano": 2022
+    },
+    {
+      "nrQuestao": 4,
+      "perguntaSrc": "fuvest_2022_fisica_04.jpg",
+      "resposta": "b",
+      "materia": "fisica",
+      "ano": 2022
+    }
+  ]
+}
