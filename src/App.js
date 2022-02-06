@@ -1,11 +1,9 @@
 import "./App.css";
-import Questao from "./components/Questao";
+import PaginaInicial from "./components/PaginaInicial";
 
 function App() {
 
- 
-
-  return <Questao/>;
+  return <PaginaInicial/>;
 }
 
 export default App;

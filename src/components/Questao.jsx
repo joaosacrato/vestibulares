@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { busca } from "../api/api";
+import importAll from "../functions/importAll";
 
 function Questao() {
   const [questao, setQuestao] = useState({});
@@ -21,30 +22,35 @@ function Questao() {
 
   //importando tds imagens
 
-  function importAll(r) {
-    let images = {};
-    r.keys().map((item, index) => {
-      images[item.replace("./", "")] = r(item);
-    });
-    return images;
-  }
-
   const images = importAll(
     require.context("../imagens", false, /\.(png|jpe?g|svg)$/)
   );
 
-  useEffect(() => {
-    busca(url, setQuestao, id);
-  }, [id]);
+
+  
 
   useEffect(() => {
-    setImg(questao.perguntaSrc);
-    console.log(id);
-  });
 
-  useEffect(()=>{
+    //faz a busca no db para encontrar a questao onde estamos
+
+    async function teste(){
+      await busca(url, setQuestao, id);
+    }
+    teste()
+
+    //após a mudança de estad da questao verifica se houve acerto ou erro
+
     if(answer===questao.resposta) console.log("você acertou")
-  })
+
+    //muda a imagem
+    
+    setImg(questao.perguntaSrc);
+    
+
+  }, [id, questao.perguntaSrc]);
+
+
+  // ao alterar a questao muda o valor da resposta do usuário
 
   const handleAnswer = (event) => {
     setAnswer(event.target.value);
@@ -52,21 +58,24 @@ function Questao() {
 
   return (
     <Container maxWidth="sm">
+      {/* Imagem da questao */}
       <CardMedia
         component="img"
         src={images[`${img}`]}
         alt="imagem da questão"
-        sx={{ my: 5 }}
+        sx={{ my: 2 }}
       />
 
+      {/* Formulário */}
+
       <FormControl sx={{ display: "inline-block" }}>
-        <FormLabel id="alternativas">Alternativas</FormLabel>
-        <RadioGroup name="radio-buttons-group" sx={{ my: 2 }}>
+        <RadioGroup name="radio-buttons-group" required>
+          <FormLabel sx={{position: "absolute", ml: 2}} id="alternativas">Alternativas</FormLabel>
           <FormControlLabel
             value="a"
             control={<Radio onChange={handleAnswer} />}
             label="a)"
-            sx={{ mt: 2 }}
+            sx={{ mt: 2}}
             labelPlacement="start"
           />
           <FormControlLabel
@@ -97,7 +106,7 @@ function Questao() {
       </FormControl>
       <Container sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
         <Button
-          sx={{ mr: 2 }}
+          sx={{ mr: 3 }}
           type="button"
           onClick={(event) => {
             event.preventDefault();

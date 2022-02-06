@@ -6,6 +6,12 @@ export const api = axios.create({
 
 export const busca = async(url, setDado, id) => {
     const resposta = await api.get(url)
-    setDado(resposta.data[id])
     console.log(id)
+    setDado(resposta.data[id])
 }
+
+export const buscaTodas = async(url, setDado) => {
+    const resposta = await api.get(url)
+    setDado(resposta.data)
+}
+
