@@ -9,16 +9,27 @@ import {
   CardMedia,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { busca } from "../api/api";
 import importAll from "../functions/importAll";
 
 function Questao() {
-  const [questao, setQuestao] = useState({});
-  const [answer, setAnswer] = useState("");
-  const [id, setId] = useState(0);
-  const [img, setImg] = useState("fuvest_2022_fisica_01.jpg");
+  // pega os valores pasados na url
+  const { prova, ano, idQuestao } = useParams();
 
-  const url = "/fuvest";
+  const navigate = useNavigate();
+
+  const [questao, setQuestao] = useState({});
+  const [respostaUsuario, setRespostaUsuario] = useState("");
+  const [respostasUsuario, setRespostasUsuario] = useState(() => {
+    const valorInicial = JSON.parse(
+      localStorage.getItem(`respostasUsuario-${prova}-${ano}`)
+    );
+    return valorInicial || {};
+  });
+
+  // dentro da db procura pela prova especifica e pelo ano
+  const url = `/${prova}?ano=${ano}&nrQuestao=${idQuestao}`;
 
   //importando tds imagens
 
@@ -26,34 +37,32 @@ function Questao() {
     require.context("../imagens", false, /\.(png|jpe?g|svg)$/)
   );
 
-
-  
-
   useEffect(() => {
-
     //faz a busca no db para encontrar a questao onde estamos
+    console.log(`a imagem é: ${questao.perguntaSrc}`);
 
-    async function teste(){
-      await busca(url, setQuestao, id);
+    async function fazBusca() {
+      await busca(url, setQuestao);
     }
-    teste()
+    fazBusca();
 
+    localStorage.setItem(
+      `respostasUsuario-${prova}-${ano}`,
+      JSON.stringify(respostasUsuario)
+    );
+
+    console.log(questao);
     //após a mudança de estad da questao verifica se houve acerto ou erro
 
-    if(answer===questao.resposta) console.log("você acertou")
+    if (respostaUsuario === questao.resposta) console.log("você acertou");
 
-    //muda a imagem
-    
-    setImg(questao.perguntaSrc);
-    
-
-  }, [id, questao.perguntaSrc]);
-
+    console.log(respostasUsuario);
+  }, [idQuestao, respostasUsuario]);
 
   // ao alterar a questao muda o valor da resposta do usuário
 
   const handleAnswer = (event) => {
-    setAnswer(event.target.value);
+    setRespostaUsuario(event.target.value);
   };
 
   return (
@@ -61,7 +70,7 @@ function Questao() {
       {/* Imagem da questao */}
       <CardMedia
         component="img"
-        src={images[`${img}`]}
+        src={images[`${questao.perguntaSrc}`]}
         alt="imagem da questão"
         sx={{ my: 2 }}
       />
@@ -70,12 +79,14 @@ function Questao() {
 
       <FormControl sx={{ display: "inline-block" }}>
         <RadioGroup name="radio-buttons-group" required>
-          <FormLabel sx={{position: "absolute", ml: 2}} id="alternativas">Alternativas</FormLabel>
+          <FormLabel sx={{ position: "absolute", ml: 2 }} id="alternativas">
+            Alternativas
+          </FormLabel>
           <FormControlLabel
             value="a"
             control={<Radio onChange={handleAnswer} />}
             label="a)"
-            sx={{ mt: 2}}
+            sx={{ mt: 2 }}
             labelPlacement="start"
           />
           <FormControlLabel
@@ -110,7 +121,10 @@ function Questao() {
           type="button"
           onClick={(event) => {
             event.preventDefault();
-            setId(id - 1);
+
+            var novoIdQuestao = parseInt(idQuestao) - 1;
+
+            navigate(`/vestibular/${prova}/${ano}/${novoIdQuestao}`);
           }}
         >
           Anterior
@@ -119,7 +133,20 @@ function Questao() {
           type="button"
           onClick={(event) => {
             event.preventDefault();
-            setId(id + 1);
+
+            if (respostaUsuario !== "") {
+              setRespostasUsuario({
+                ...respostasUsuario,
+                [idQuestao]: respostaUsuario,
+              });
+            }
+
+            console.log(
+              `respostas usuario: ${JSON.stringify(respostasUsuario)}`
+            );
+
+            var novoIdQuestao = parseInt(idQuestao) + 1;
+            navigate(`/vestibular/${prova}/${ano}/${novoIdQuestao}`);
           }}
         >
           Próxima
